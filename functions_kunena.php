@@ -353,6 +353,7 @@ function insert_bbcodes() {
     '[font={SIMPLETEXT}]{TEXT}[/font]'    => '<span style="font-family: {SIMPLETEXT};">{TEXT}</span>',
     '[hr][/hr]'                           => '<hr />',
     '[s]{TEXT}[/s]'                       => '<span style="text-decoration: line-through;">{TEXT}</span>',
+    '[spoiler]{TEXT}[/spoiler]'           => '<div style="margin-bottom: 2px;"><b>ВНИМАНИЕ: Спойлер! </b><input value="Show" style="margin: 0px; padding: 0px; width: 60px; font-size: 10px;" onclick="if(this.parentNode.parentNode.getElementsByTagName(\'div\')[1].getElementsByTagName(\'div\')[0].style.display != \'inline\') { this.parentNode.parentNode.getElementsByTagName(\'div\')[1].getElementsByTagName(\'div\')[0].style.display = \'inline\'; this.innerText = \'\'; this.value = \'Hide\'; } else { this.parentNode.parentNode.getElementsByTagName(\'div\')[1].getElementsByTagName(\'div\')[0].style.display = \'none\'; this.innerText = \'\'; this.value=\'Show\'; }" type="button"></div><div style="border: 1px inset; padding: 6px;"><div style="display: none;">{TEXT}</div></div>',
   );
 
   if (!class_exists('acp_bbcodes')) {
