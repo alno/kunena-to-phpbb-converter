@@ -302,6 +302,18 @@ function update_last_post_info()
 function prepare_message($text) {
   global $convert;
 
+  $bbcode_conversions = array(
+    '[ol]' => '[list=1]',
+    '[/ol]' => '[/list]',
+    '[ul]' => '[list]',
+    '[/ul]' => '[/list]',
+    '[li]' => '[*]',
+    '[/li]' => '',
+  );
+
+  // Convert bbcodes
+  $text = str_replace(array_keys($bbcode_conversions), array_values($bbcode_conversions), $text);
+
   // Remove spaces inside bbcodes
   $text = preg_replace('/\s+\]/', ']', $text);
 
