@@ -333,4 +333,41 @@ function activate_topic_polls() {
   $db->sql_query('UPDATE ' . TOPICS_TABLE . " SET poll_start = topic_time WHERE poll_title <> ''");
 }
 
+function insert_bbcodes() {
+  global $phpbb_root_path, $phpEx, $db;
+
+  $bbcode_templates = array(
+    '[align={SIMPLETEXT}]{TEXT}[/align]'  => '<div style="text-align: {SIMPLETEXT};">{TEXT}</div>',
+    '[font={SIMPLETEXT}]{TEXT}[/font]'    => '<span style="font-family: {SIMPLETEXT};">{TEXT}</span>',
+    '[hr][/hr]'                           => '<hr />',
+    '[s]{TEXT}[/s]'                       => '<span style="text-decoration: line-through;">{TEXT}</span>',
+  );
+
+  if (!class_exists('acp_bbcodes')) {
+    include($phpbb_root_path . 'includes/acp/acp_bbcodes.' . $phpEx);
+  }
+
+  $bbcode = new \acp_bbcodes();
+  $bbcode_settings = array();
+
+  $bbcode_id = NUM_CORE_BBCODES;
+
+  // Build bbcode regexps
+  foreach ($bbcode_templates as $match => $tpl) {
+    $settings = $bbcode->build_regexp($match, $tpl);
+
+    $bbcode_settings[$settings['bbcode_tag']] = array_merge($settings, array(
+      'bbcode_match'        => $match,
+      'bbcode_tpl'          => $tpl,
+      'display_on_posting'  => 1,
+      'bbcode_helpline'     => '',
+      'bbcode_id'           => ++$bbcode_id,
+    ));
+  }
+
+  truncate_table(BBCODES_TABLE);
+
+  $db->sql_multi_insert(BBCODES_TABLE, array_values($bbcode_settings));
+}
+
 ?>

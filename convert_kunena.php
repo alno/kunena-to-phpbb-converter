@@ -128,9 +128,7 @@ if (!$get_info)
   $convertor = array(
     'test_file'       => $test_file,
 
-    'execute_first' => '
-      insert_forums();
-    ',
+    'execute_first' => 'insert_forums(); insert_bbcodes();',
 
     'execute_last'  => array(
       'add_bots();',
