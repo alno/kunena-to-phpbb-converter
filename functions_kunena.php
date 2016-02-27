@@ -302,6 +302,9 @@ function update_last_post_info()
 function prepare_message($text) {
   global $convert;
 
+  // Remove spaces inside bbcodes
+  $text = preg_replace('/\s+\]/', ']', $text);
+
   $uid = $bitfield = $options = ''; // will be modified by generate_text_for_storage
   $allow_bbcode = $allow_urls = $allow_smilies = true;
 
