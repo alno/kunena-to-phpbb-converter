@@ -136,8 +136,9 @@ if (!$get_info)
       'grant_permissions();',
       'grant_forum_permissions();',
       'grant_category_permissions();',
-      'update_folder_pm_count();',
-      'update_unread_count();',
+//      'update_folder_pm_count();',
+//      'update_unread_count();',
+      'update_topics_posted();',
       'update_last_post_info();',
     ),
 
@@ -159,8 +160,8 @@ if (!$get_info)
         array('user_style',       $config['default_style'],   ''),
         array('user_permissions',   '',                 ''),
         array('user_sig',   'kunena_users.signature',                 ''),
-        array('user_regdate',   'users.registerDate',                 ''),
-        array('user_lastvisit',   'users.lastvisitDate',              ''),
+        array('user_regdate',   'users.registerDate',                 array('typecast' => 'int')),
+        array('user_lastvisit',   'users.lastvisitDate',              array('typecast' => 'int')),
 
 
         'left_join' => 'users LEFT JOIN kunena_users ON users.id = kunena_users.userid',
@@ -218,7 +219,7 @@ if (!$get_info)
         array('post_edit_count',    'kunena_messages.modified_time',    'is_positive'),
         array('post_edit_time',     'kunena_messages.modified_time',    array('typecast' => 'int')),
         array('post_edit_reason',   'kunena_messages.modified_reason',               ''),
-        array('post_edit_user',     'kunena_messages.modified_by',    ''),
+        array('post_edit_user',     'kunena_messages.modified_by',      'null_to_zero'),
 
         'left_join' => 'kunena_messages LEFT JOIN kunena_messages_text ON kunena_messages.id = kunena_messages_text.mesid',
       ),
