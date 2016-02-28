@@ -148,21 +148,20 @@ if (!$get_info)
         'primary'   => 'users.id',
         'autoincrement' => 'user_id',
         'query_first' => array(
-          array('target', 'DELETE FROM ' . USERS_TABLE . ' WHERE user_id > ' . 2), // Leave anon and admin as is // <> ' . ANONYMOUS
+          array('target', 'DELETE FROM ' . USERS_TABLE . ' WHERE user_id > ' . 2), // Leave anon and admin as is
           array('target', $convert->truncate_statement . BOTS_TABLE),
         ),
 
-        array('user_id',  'users.id',            ''),
-        array('username',  'users.username',            ''),
-        array('username_clean',  'users.username',            'utf8_clean_string'),
-        array('user_email',  'users.email',            ''),
-        array('user_password',   'users.password',                 ''),
-        array('user_style',       $config['default_style'],   ''),
-        array('user_permissions',   '',                 ''),
-        array('user_sig',   'kunena_users.signature',                 ''),
-        array('user_regdate',   'users.registerDate',                 array('typecast' => 'int')),
-        array('user_lastvisit',   'users.lastvisitDate',              array('typecast' => 'int')),
-
+        array('user_id',          'users.id',               ''),
+        array('username',         'users.username',         ''),
+        array('username_clean',   'users.username',         'utf8_clean_string'),
+        array('user_email',       'users.email',            ''),
+        array('user_password',    'users.password',         ''),
+        array('user_style',       $config['default_style'], ''),
+        array('user_permissions', '',                       ''),
+        array('user_sig',         'kunena_users.signature', ''),
+        array('user_regdate',     'users.registerDate',     'strtotime'),
+        array('user_lastvisit',   'MAX(users.registerDate, users.lastvisitDate)', 'strtotime'),
 
         'left_join' => 'users LEFT JOIN kunena_users ON users.id = kunena_users.userid',
         'where' => "users.username <> 'Anonymous'" // TODO Remove
@@ -217,8 +216,8 @@ if (!$get_info)
         array('post_checksum',   '',               ''),
 
         array('post_edit_count',    'kunena_messages.modified_time',    'is_positive'),
-        array('post_edit_time',     'kunena_messages.modified_time',    array('typecast' => 'int')),
-        array('post_edit_reason',   'kunena_messages.modified_reason',               ''),
+        array('post_edit_time',     'kunena_messages.modified_time',    'null_to_zero'),
+        array('post_edit_reason',   'kunena_messages.modified_reason',  ''),
         array('post_edit_user',     'kunena_messages.modified_by',      'null_to_zero'),
 
         'left_join' => 'kunena_messages LEFT JOIN kunena_messages_text ON kunena_messages.id = kunena_messages_text.mesid',
