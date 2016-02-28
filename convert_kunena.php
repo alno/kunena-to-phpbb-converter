@@ -136,10 +136,11 @@ if (!$get_info)
       'grant_permissions();',
       'grant_forum_permissions();',
       'grant_category_permissions();',
+
 //      'update_folder_pm_count();',
 //      'update_unread_count();',
-      'update_topics_posted();',
-      'update_last_post_info();',
+
+      "sync('topic', '', '', false, true);", // We should sync topics before forums in final stage
     ),
 
     'schema' => array(

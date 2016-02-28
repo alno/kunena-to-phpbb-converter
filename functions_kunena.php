@@ -35,7 +35,7 @@ function insert_forums()
 
   // Loading forum data
 
-  $sql = 'SELECT id, parent_id, name, description  FROM ' . $convert->src_table_prefix . 'kunena_categories ORDER BY id';
+  $sql = 'SELECT id, parent_id, name, description FROM ' . $convert->src_table_prefix . 'kunena_categories ORDER BY id';
   $result = $src_db->sql_query($sql);
 
   $forums = $forum_groups = $last_topics = array();
@@ -265,37 +265,6 @@ function grant_forum_permissions()
     mass_auth('group_role', $row['forum_id'], 'registered_coppa', 'FORUM_STANDARD');
     mass_auth('group_role', $row['forum_id'], 'bots', 'FORUM_BOT');
     mass_auth('group_role', $row['forum_id'], 'newly_registered', 'FORUM_NEW_MEMBER');
-  }
-}
-
-function update_last_post_info()
-{
-  global $db;
-
-  $sql = 'SELECT forum_id, forum_name, parent_id, left_id, right_id
-    FROM ' . FORUMS_TABLE . '
-    WHERE parent_id <> 0';
-  $result = $db->sql_query($sql);
-
-  $forums = array();
-  while ($row = $db->sql_fetchrow($result))
-  {
-    $forums[] = $row;
-  }
-  $db->sql_freeresult($result);
-
-  foreach ($forums as $frow) {
-    $sql = 'SELECT topic_last_post_id, topic_last_poster_id
-      FROM ' . TOPICS_TABLE . ' WHERE forum_id = ' . $frow['forum_id'] . '
-      ORDER BY topic_last_post_id DESC LIMIT 1';
-    $result = $db->sql_query($sql);
-    while ($trow = $db->sql_fetchrow($result))
-    {
-      $sql = 'UPDATE ' . FORUMS_TABLE . ' SET forum_last_post_id = ' . $trow['topic_last_post_id'] . ', forum_last_poster_id = ' . $trow['topic_last_poster_id'] . '
-        WHERE forum_id = ' . $frow['forum_id'];
-      $db->sql_query($sql);
-    }
-    $db->sql_freeresult($result);
   }
 }
 
