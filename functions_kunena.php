@@ -308,9 +308,73 @@ function get_bbcode_bitfield() {
   return $convert->row['bbcode_bitfield'];
 }
 
-function activate_topic_polls() {
-  global $db, $convert;
+function sync_poll($topic_id, $poll_id, $poll_title) {
+  global $db, $src_db, $convert;
 
+  $topic_fields = array(
+    'poll_title' => $poll_title,
+    'poll_max_options' => 1,
+    'poll_vote_change' => 0,
+  );
+
+  // Update topic info
+  $db->sql_query('UPDATE ' . TOPICS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $topic_fields) . ' WHERE topic_id = ' . $topic_id);
+
+  // Convert options
+  $poll_option_id = 1;
+  $poll_option_mapping = array();
+
+  $sql = 'SELECT id, text, votes FROM ' . $convert->src_table_prefix . 'kunena_polls_options WHERE pollid = ' . $poll_id . ' ORDER BY id';
+  $result = $src_db->sql_query($sql);
+
+  while ($row = $src_db->sql_fetchrow($result)) {
+    $poll_option_fields = array(
+      'topic_id' => $topic_id,
+      'poll_option_id' => $poll_option_id,
+      'poll_option_text' => $row['text'],
+      'poll_option_total' => $row['votes'],
+    );
+
+    $poll_option_mapping[$row['id']] = $poll_option_id;
+
+    $db->sql_query('INSERT INTO ' . POLL_OPTIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $poll_option_fields));
+
+    ++ $poll_option_id;
+  }
+
+  $db->sql_freeresult($result);
+
+  // Convert poll votes
+  $sql = 'SELECT userid, lastvote FROM ' . $convert->src_table_prefix . 'kunena_polls_users WHERE pollid = ' . $poll_id;
+  $result = $src_db->sql_query($sql);
+
+  while ($row = $src_db->sql_fetchrow($result)) {
+    $poll_vote_fields = array(
+      'topic_id' => $topic_id,
+      'poll_option_id' => $poll_option_mapping[$row['lastvote']],
+      'vote_user_id' => $row['userid'],
+    );
+
+    $db->sql_query('INSERT INTO ' . POLL_VOTES_TABLE . ' ' . $db->sql_build_array('INSERT', $poll_vote_fields));
+  }
+
+  $db->sql_freeresult($result);
+}
+
+function sync_polls() {
+  global $db, $src_db, $convert;
+
+  truncate_table(POLL_OPTIONS_TABLE);
+  truncate_table(POLL_VOTES_TABLE);
+
+  $sql = 'SELECT id, threadid, title FROM ' . $convert->src_table_prefix . 'kunena_polls ORDER BY id';
+  $result = $src_db->sql_query($sql);
+
+  while ($row = $src_db->sql_fetchrow($result)) {
+    sync_poll($row['threadid'], $row['id'], $row['title']);
+  }
+
+  // Activate polls
   $db->sql_query('UPDATE ' . TOPICS_TABLE . " SET poll_start = topic_time WHERE poll_title <> ''");
 }
 

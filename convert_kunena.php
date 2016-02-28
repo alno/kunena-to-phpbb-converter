@@ -132,7 +132,7 @@ if (!$get_info)
 
     'execute_last'  => array(
       'add_bots();',
-      'activate_topic_polls();',
+      'sync_polls();',
       'grant_permissions();',
       'grant_forum_permissions();',
       'grant_category_permissions();',
@@ -189,12 +189,6 @@ if (!$get_info)
         array('topic_last_post_time',   'kunena_topics.last_post_time',      ''),
         array('topic_last_poster_id',   'kunena_topics.last_post_userid',      ''),
         array('topic_last_poster_name', 'kunena_topics.last_post_guest_name',      ''),
-
-        array('poll_title',       'kunena_polls.title',   ''),
-        array('poll_max_options',   1,              ''),
-        array('poll_vote_change',   0,              ''),
-
-        'left_join' => 'kunena_topics LEFT JOIN kunena_polls ON kunena_polls.threadid = kunena_topics.id',
       ),
 
       array(
@@ -222,31 +216,6 @@ if (!$get_info)
         array('post_edit_user',     'kunena_messages.modified_by',      'null_to_zero'),
 
         'left_join' => 'kunena_messages LEFT JOIN kunena_messages_text ON kunena_messages.id = kunena_messages_text.mesid',
-      ),
-
-      array(
-        'target'    => POLL_OPTIONS_TABLE,
-        'primary'   => 'kunena_polls_options.id',
-        'query_first' => array('target', $convert->truncate_statement . POLL_OPTIONS_TABLE),
-
-        array('poll_option_id',     'kunena_polls_options.id',    ''),
-        array('topic_id',           'kunena_polls.threadid',     ''),
-        array('poll_option_text',   'kunena_polls_options.text',  ''),
-        array('poll_option_total',  'kunena_polls_options.votes', ''),
-
-        'left_join' => 'kunena_polls_options LEFT JOIN kunena_polls ON kunena_polls_options.pollid = kunena_polls.id',
-      ),
-
-      array(
-        'target'    => POLL_VOTES_TABLE,
-        'query_first' => array('target', $convert->truncate_statement . POLL_VOTES_TABLE),
-
-        array('topic_id',       'kunena_polls.threadid',       ''),
-        array('poll_option_id', 'kunena_polls_users.lastvote', ''),
-        array('vote_user_id',   'kunena_polls_users.userid',   ''),
-
-        'order_by'    => 'kunena_polls_users.lasttime ASC',
-        'left_join' => 'kunena_polls_users LEFT JOIN kunena_polls ON kunena_polls_users.pollid = kunena_polls.id',
       ),
     ),
   );
