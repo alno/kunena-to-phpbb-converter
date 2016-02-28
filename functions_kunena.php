@@ -416,4 +416,35 @@ function insert_bbcodes() {
   $db->sql_multi_insert(BBCODES_TABLE, array_values($bbcode_settings));
 }
 
+function get_file_extension($filename) {
+  return pathinfo($filename, PATHINFO_EXTENSION);
+}
+
+function import_attachment_file($srcname) {
+  global $config, $convert;
+
+  $trgname = $convert->row['userid'] . '_' . md5($srcname);
+
+  $srcpath = $convert->options['forum_path'] . '/media/kunena/attachments/' . $convert->row['userid'] . '/' . $srcname;
+  $trgpath = $config['upload_path'] . '/'. $trgname;
+
+  //var_dump($convert->row);
+  //var_dump(array($srcpath, $trgpath));
+
+  copy_file($srcpath, $trgpath, true);
+
+  return $trgname;
+}
+
+function post_has_attachment($post_id) {
+  global $db;
+
+  $sql = 'SELECT attach_id FROM ' . ATTACHMENTS_TABLE . ' WHERE post_msg_id = ' . (int) $post_id;
+
+  $result = $db->sql_query($sql);
+  $row = $db->sql_fetchrowset($result);
+  $db->sql_freeresult($result);
+
+  return (sizeof($row)) > 0 ? 1 : 0;
+}
 ?>

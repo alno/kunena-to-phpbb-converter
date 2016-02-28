@@ -36,7 +36,7 @@ $convertor_data = array(
 * forum which can be used to check that the path specified by the
 * user was correct
 */
-$test_file = 'index.php';
+$test_file = 'configuration.php';
 
 /**
 * $tables is a list of the tables (minus prefix) which we expect to find in the
@@ -192,6 +192,34 @@ if (!$get_info)
       ),
 
       array(
+        'target'        => ATTACHMENTS_TABLE,
+        'query_first'   => array('target', $convert->truncate_statement . ATTACHMENTS_TABLE),
+        'primary'       => 'kunena_attachments.id',
+        'autoincrement' => 'attach_id',
+
+        array('physical_filename', 'kunena_attachments.filename', 'import_attachment_file'),
+
+        array('real_filename',  'kunena_attachments.filename_real', ''),
+        array('extension',      'kunena_attachments.filename_real', 'get_file_extension'),
+
+        array('attach_id',      'kunena_attachments.id',       ''),
+        array('post_msg_id',    'kunena_attachments.mesid',    ''),
+        array('topic_id',       'kunena_messages.thread',      ''),
+        array('poster_id',      'kunena_attachments.userid',   ''),
+        array('attach_comment', 'kunena_attachments.caption',  ''),
+        array('mimetype',       'kunena_attachments.filetype', ''),
+        array('filesize',       'kunena_attachments.size',     ''),
+        array('filetime',       'kunena_messages.time',        ''),
+
+        array('in_message',     0, ''),
+        array('is_orphan',      0, ''),
+        array('download_count', 0, ''),
+        array('thumbnail',      0, ''),
+
+        'left_join' => 'kunena_attachments LEFT JOIN kunena_messages ON kunena_messages.id = kunena_attachments.mesid',
+      ),
+
+      array(
         'target'        => POSTS_TABLE,
         'query_first'   => array('target', $convert->truncate_statement . POSTS_TABLE),
         'primary'       => 'kunena_messages.id',
@@ -209,6 +237,8 @@ if (!$get_info)
         array('bbcode_bitfield', '',                             'get_bbcode_bitfield'),
         array('post_visibility', 1,      ''),
         array('post_checksum',   '',               ''),
+
+        array('post_attachment',    'kunena_messages.id',   'post_has_attachment'),
 
         array('post_edit_count',    'kunena_messages.modified_time',    'is_positive'),
         array('post_edit_time',     'kunena_messages.modified_time',    'null_to_zero'),
