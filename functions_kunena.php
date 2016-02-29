@@ -283,6 +283,9 @@ function prepare_message($text) {
   // Convert bbcodes
   $text = str_replace(array_keys($bbcode_conversions), array_values($bbcode_conversions), $text);
 
+  // Convert img bbcode with size option
+  $text = preg_replace('/\[img size=(.+?)\[\/img\]/', '[img_size=\1[/img_size]', $text);
+
   // Remove spaces inside bbcodes
   $text = preg_replace('/\s+\]/', ']', $text);
 
@@ -382,11 +385,23 @@ function insert_bbcodes() {
   global $phpbb_root_path, $phpEx, $db;
 
   $bbcode_templates = array(
-    '[align={SIMPLETEXT}]{TEXT}[/align]'  => '<div style="text-align: {SIMPLETEXT};">{TEXT}</div>',
-    '[font={SIMPLETEXT}]{TEXT}[/font]'    => '<span style="font-family: {SIMPLETEXT};">{TEXT}</span>',
-    '[hr][/hr]'                           => '<hr />',
-    '[s]{TEXT}[/s]'                       => '<span style="text-decoration: line-through;">{TEXT}</span>',
-    '[spoiler]{TEXT}[/spoiler]'           => '<div style="margin-bottom: 2px;"><b>ВНИМАНИЕ: Спойлер! </b><input value="Show" style="margin: 0px; padding: 0px; width: 60px; font-size: 10px;" onclick="if(this.parentNode.parentNode.getElementsByTagName(\'div\')[1].getElementsByTagName(\'div\')[0].style.display != \'inline\') { this.parentNode.parentNode.getElementsByTagName(\'div\')[1].getElementsByTagName(\'div\')[0].style.display = \'inline\'; this.innerText = \'\'; this.value = \'Hide\'; } else { this.parentNode.parentNode.getElementsByTagName(\'div\')[1].getElementsByTagName(\'div\')[0].style.display = \'none\'; this.innerText = \'\'; this.value=\'Show\'; }" type="button"></div><div style="border: 1px inset; padding: 6px;"><div style="display: none;">{TEXT}</div></div>',
+    '[img_size={SIMPLETEXT}]{TEXT}[/img_size]' => '<img with="{SIMPLETEXT}" src="{TEXT}" />',
+    '[align={SIMPLETEXT}]{TEXT}[/align]'       => '<div style="text-align: {SIMPLETEXT};">{TEXT}</div>',
+    '[center]{TEXT}[/center]'                  => '<div style="text-align: center;">{TEXT}</div>',
+    '[font={SIMPLETEXT}]{TEXT}[/font]'         => '<span style="font-family: {SIMPLETEXT};">{TEXT}</span>',
+    '[hr][/hr]'                                => '<hr />',
+    '[s]{TEXT}[/s]'                            => '<span style="text-decoration: line-through;">{TEXT}</span>',
+    '[table]{TEXT}[/table]'                    => '<table>{TEXT}</table>',
+    '[tr]{TEXT}[/tr]'                          => '<tr>{TEXT}</tr>',
+    '[td]{TEXT}[/td]'                          => '<td>{TEXT}</td>',
+    '[spoiler]{TEXT}[/spoiler]'                => '<div class="spoiler" style="background-color: #f0f0d0; border: 1px solid #dedede; border-radius: 3px; padding: 5px; margin: 8px 12px;">'.
+                                                    '<div class="spoiler-trigger" style="cursor: pointer; color: #444; font-weight: bold;" onclick="var b = $(this).parent(\'.spoiler\').children(\'.spoiler-body\'); if (b.is(\':visible\')) { $(this).text(\'SPOILER: SHOW\'); b.hide(); } else { $(this).text(\'SPOILER: HIDE\'); b.show();  }" >'.
+                                                      'SPOILER: SHOW'.
+                                                    '</div>'.
+                                                    '<div class="spoiler-body" style="margin-top: 10px; display: none;">'.
+                                                      '{TEXT}'.
+                                                    '</div>'.
+                                                  '</div>'
   );
 
   if (!class_exists('acp_bbcodes')) {
