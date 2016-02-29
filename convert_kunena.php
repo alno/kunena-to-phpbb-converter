@@ -161,6 +161,7 @@ if (!$get_info)
         array('user_style',       $config['default_style'], ''),
         array('user_permissions', '',                       ''),
         array('user_sig',         'kunena_users.signature', ''),
+        array('user_posts',       'kunena_users.posts',     'null_to_zero'),
         array('user_regdate',     'users.registerDate',     'strtotime'),
         array('user_lastvisit',   'MAX(users.registerDate, users.lastvisitDate)', 'strtotime'),
 
