@@ -391,9 +391,15 @@ function insert_bbcodes() {
     '[font={SIMPLETEXT}]{TEXT}[/font]'         => '<span style="font-family: {SIMPLETEXT};">{TEXT}</span>',
     '[hr][/hr]'                                => '<hr />',
     '[s]{TEXT}[/s]'                            => '<span style="text-decoration: line-through;">{TEXT}</span>',
+    '[strike]{TEXT}[/strike]'                  => '<span style="text-decoration: line-through;">{TEXT}</span>',
     '[table]{TEXT}[/table]'                    => '<table>{TEXT}</table>',
     '[tr]{TEXT}[/tr]'                          => '<tr>{TEXT}</tr>',
     '[td]{TEXT}[/td]'                          => '<td>{TEXT}</td>',
+    '[video]{URL}[/video]'                     => '<div class="bbvideo" data-url="{URL}" style="width: 640px; height: 390px; margin: 2px 0; display: inline-block; background: #000; color: #fff; overflow: hidden; vertical-align: bottom;">'.
+                                                    '<div style="height: 100%;">'.
+                                                      '<script>if (typeof bbmedia == "undefined") { bbmedia = true; var e = document.createElement("script"); e.async = true; e.src = "./styles/shared/bbmedia.js"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(e, s); }</script>'.
+                                                    '</div>'.
+                                                  '</div>',
     '[spoiler]{TEXT}[/spoiler]'                => '<div class="spoiler" style="background-color: #f0f0d0; border: 1px solid #dedede; border-radius: 3px; padding: 5px; margin: 8px 12px;">'.
                                                     '<div class="spoiler-trigger" style="cursor: pointer; color: #444; font-weight: bold;" onclick="var b = $(this).parent(\'.spoiler\').children(\'.spoiler-body\'); if (b.is(\':visible\')) { $(this).text(\'SPOILER: SHOW\'); b.hide(); } else { $(this).text(\'SPOILER: HIDE\'); b.show();  }" >'.
                                                       'SPOILER: SHOW'.
