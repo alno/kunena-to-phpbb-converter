@@ -99,57 +99,10 @@ function grant_permissions()
 
   truncate_table(ACL_USERS_TABLE);
   truncate_table(ACL_GROUPS_TABLE);
-/*
-  // Grab users with admin permissions
-  $sql = "SELECT uid, permissions
-    FROM {$this->src_table_prefix}adminoptions
-    WHERE uid >= 1";
-  $result = $this->src_db->sql_query($sql);*/
-
-  $admins = $founders = array();
-
-/*
-  while ($row = $this->src_db->sql_fetchrow($result))
-  {
-    $user_id = (int) $this->get_user_id($row['uid']);
-    $permissions = unserialize($row['permissions']);
-    $admins[] = $user_id;
-
-    if ($permissions['user']['admin_permissions'])
-    {
-      $founders[] = $user_id;
-    }
-  }
-  $this->src_db->sql_freeresult($result);
-
-  // We'll set the users that can manage admin permissions as founders.
-  $sql = 'UPDATE ' . USERS_TABLE . '
-    SET user_type = ' . USER_FOUNDER . "
-    WHERE " . $this->db->sql_in_set('user_id', $founders);
-  $this->db->sql_query($sql);*/
-
-  $bot_group_id = get_group_id('bots');
 
   // Add the anonymous user to the GUESTS group, and everyone else to the REGISTERED group
   user_group_auth('guests', 'SELECT user_id, {GUESTS} FROM ' . USERS_TABLE . ' WHERE user_id = ' . ANONYMOUS, false);
-  user_group_auth('registered', 'SELECT user_id, {REGISTERED} FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS . " AND group_id <> $bot_group_id", false);
-
-  if (!function_exists('group_set_user_default'))
-  {
-    include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-  }
-
-  if ($admins)
-  {
-    $auth_sql = 'SELECT user_id, {ADMINISTRATORS} FROM ' . USERS_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $admins);
-    user_group_auth('administrators', $auth_sql, false);
-
-    $auth_sql = 'SELECT user_id, {GLOBAL_MODERATORS} FROM ' . USERS_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $admins);
-    user_group_auth('global_moderators', $auth_sql, false);
-
-    // Set the admin group as their default group.
-    group_set_user_default(get_group_id('administrators'), $admins);
-  }
+  user_group_auth('registered', 'SELECT user_id, {REGISTERED} FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS . " AND group_id <> " . get_group_id('bots'), false);
 
   // Assign permission roles and other default permissions
 
