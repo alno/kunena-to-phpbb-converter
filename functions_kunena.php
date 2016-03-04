@@ -421,4 +421,13 @@ function post_has_attachment($post_id) {
 
   return (sizeof($row)) > 0 ? 1 : 0;
 }
+
+function fix_orphans() {
+  global $db;
+
+  $db->sql_query('UPDATE ' . POSTS_TABLE . ' SET poster_id = ' . ANONYMOUS . ' WHERE poster_id NOT IN (SELECT user_id FROM ' . USERS_TABLE . ')');
+  $db->sql_query('UPDATE ' . ATTACHMENTS_TABLE . ' SET poster_id = ' . ANONYMOUS . ' WHERE poster_id NOT IN (SELECT user_id FROM ' . USERS_TABLE . ')');
+  $db->sql_query('UPDATE ' . TOPICS_TABLE . ' SET topic_poster = ' . ANONYMOUS . ' WHERE topic_poster NOT IN (SELECT user_id FROM ' . USERS_TABLE . ')');
+  $db->sql_query('UPDATE ' . TOPICS_TABLE . ' SET topic_last_poster_id = ' . ANONYMOUS . ' WHERE topic_last_poster_id NOT IN (SELECT user_id FROM ' . USERS_TABLE . ')');
+}
 ?>

@@ -131,6 +131,7 @@ if (!$get_info)
     'execute_first' => 'insert_forums(); insert_bbcodes();',
 
     'execute_last'  => array(
+      'fix_orphans();',
       'add_bots();',
       'sync_polls();',
       'grant_permissions();',
