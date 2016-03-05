@@ -225,19 +225,25 @@ function prepare_message($text) {
   global $convert;
 
   $bbcode_conversions = array(
-    '[ol]' => '[list=1]',
+    '[ol]'  => '[list=1]',
     '[/ol]' => '[/list]',
-    '[ul]' => '[list]',
+    '[ul]'  => '[list]',
     '[/ul]' => '[/list]',
-    '[li]' => '[*]',
+    '[li]'  => '[*]',
     '[/li]' => '',
+    '[hr]'  => '[hr][/hr]',
   );
 
   // Convert bbcodes
   $text = str_replace(array_keys($bbcode_conversions), array_values($bbcode_conversions), $text);
 
+  $bbcode_regex_conversions = array(
+    '/\[img size=(.+?)\[\/img\]/' => '[img_size=\1[/img_size]',
+    '/\[quote[^]]+\]/' => '[quote]'
+  );
+
   // Convert img bbcode with size option
-  $text = preg_replace('/\[img size=(.+?)\[\/img\]/', '[img_size=\1[/img_size]', $text);
+  $text = preg_replace(array_keys($bbcode_regex_conversions), array_values($bbcode_regex_conversions), $text);
 
   // Remove spaces inside bbcodes
   $text = preg_replace('/\s+\]/', ']', $text);
