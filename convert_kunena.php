@@ -158,6 +158,7 @@ if (!$get_info)
         array('username',         'users.username',         ''),
         array('username_clean',   'users.username',         'utf8_clean_string'),
         array('user_email',       'users.email',            ''),
+        array('user_email_hash',  'users.email',            'gen_email_hash'),
         array('user_password',    'users.password',         ''),
         array('user_style',       $config['default_style'], ''),
         array('user_permissions', '',                       ''),
